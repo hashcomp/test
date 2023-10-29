@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Page Scraper</title>
+</head>
+<body>
+    <h1>Web Page Scraper</h1>
+
+    <form>
+        <label for="articleUrl">Article URL:</label>
+        <input type="text" id="articleUrl" size="50">
+        <button type="button" id="scrapeButton">Scrape</button>
+    </form>
+
+    <div id="articleContent"></div>
+
+    <script>
+        document.getElementById("scrapeButton").addEventListener("click", function () {
+            // Get the article URL from the input field
+            var articleUrl = document.getElementById("articleUrl").value;
+
+            // Check if the URL starts with "http"
+            if (articleUrl.indexOf("http") !== 0) {
+                alert("That's not a web page :(");
+                return;
+            }
+
+            // Fetch the web page content using AJAX
+            fetch(articleUrl)
+                .then(response => response.text())
+                .then(html => {
+                    // Process the HTML content to extract the article
+                    var articleContent = extractArticle(html);
+
+                    // Display the enhanced content on the page
+                    document.getElementById("articleContent").innerHTML = articleContent;
+                })
+                .catch(error => {
+                    alert("Failed to get the article: " + error);
+                });
+        });
+
+        function extractArticle(html) {
+            // Use Readability.js to parse and extract the article content
+            var doc = new DOMParser().parseFromString(html, "text/html");
+            var article = new Readability(doc).parse();
+
+            // Create an HTML structure for the extracted content
+            var articleContent = document.createElement("div");
+            articleContent.innerHTML = article.content;
+
+            return articleContent.outerHTML;
+        }
+    </script>
+    <script src="https://unpkg.com/readability/readability.js"></script>
+</body>
+</html>
